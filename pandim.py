@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version: 0.7.4
+# version: 0.8.3
 # 2013-12-8
 
 """ pandim: html file generator
@@ -15,7 +15,7 @@ import yate
     
 def pandim(args):
     if args.filename:
-        fobj = args.filename
+        fobj = open(args.filename, 'r')
     else:
         fobj = sys.stdin
 
@@ -59,6 +59,9 @@ def pandim(args):
         else:
             line = yate.para(line)
         print(line)
+
+    if args.filename:
+        fobj.close()
 
 def parse_args():
     parser = argparse.ArgumentParser()
