@@ -5,16 +5,21 @@ use yate as support
 """
 
 import sys
+import re
 import argparse
 
 import yate
     
-def pandim(args):
-    for line in sys.stdin:
-        line = line.rstrip('\n')
-        if line.startswith('#'):
-            line = yate.header(line.lstrip('#'))
-        print(line)
+def pandim(line, args):
+    line = line.rstrip('\n')
+    if line.startswith('#'):
+        npounds = re.match(r'#+', line).group(0)
+        line = line.lstrip('#').lstrip(' ')
+        line = yate.header(line, len(npounds))
+    else:
+        line = yate.para(line)
+
+    return line
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -26,9 +31,19 @@ if __name__ == '__main__':
     args = parse_args()
     templ_1 = """<!DOCTYPE html>
     <html lang='zh' xmlns="http://www.w3.org/1999/xhtml">
-      <head><title>{title}</title></head>
+      <head>
+        <meta charset='utf-8' />
+        <title>{title}</title>
+      </head>
       <body> """
     templ_2 = """</body> </html> """
-    print(templ_1.format(title=args.title))
-    pandim(args)
+
+    if args.title:
+        print(templ_1.format(title=args.title))
+    else:
+        print(templ_1.format(title='a.html'))
+
+    for line in sys.stdin:
+        line = pandim(line, args)
+        print(line)
     print(templ_2)
